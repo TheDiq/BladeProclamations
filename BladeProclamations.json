@@ -1,0 +1,12 @@
+{
+  "Name": "Blade Proclamations",
+  "Author": "Saddiq Howard & Codex",
+  "Punchline": "Elegant, catastrophically edgy verses for your confirmed Samurai actions.",
+  "Description": "Keeps normal Samurai hotbar actions intact. When one of your configured actions is confirmed by the client, it prints a private local-chat proclamation and displays a movable, styled verse overlay. Use /bladeproclaim to configure it.",
+  "ApplicableVersion": "any",
+  "Tags": [
+    "samurai",
+    "roleplay",
+    "overlay"
+  ]
+}
