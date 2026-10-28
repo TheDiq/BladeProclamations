@@ -49,22 +49,22 @@ jobs:
           Copy-Item $package.FullName release/latest.zip -Force
           "path=release/latest.zip" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
-      - name: Replace v1.0.0 release
+      - name: Replace v1.0.1 release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete v1.0.0 --yes --cleanup-tag 2>$null
+          gh release delete v1.0.1 --yes --cleanup-tag 2>$null
           if ($LASTEXITCODE -ne 0) {
-            Write-Host "No previous v1.0.0 release exists."
+            Write-Host "No previous v1.0.1 release exists."
           }
-          gh release create v1.0.0 release/latest.zip `
-            --title "Blade Proclamations v1.0.0" `
-            --notes "Initial API 15 release: private Echo verses, movable animated overlay, editable action quotes, and three visual themes." `
+          gh release create v1.0.1 release/latest.zip `
+            --title "Blade Proclamations v1.0.1" `
+            --notes "Locked proclamations now float directly over the game without a background panel, with a soft readability shadow." `
             --latest
 
       - name: Upload diagnostic artifact
         uses: actions/upload-artifact@v4
         with:
-          name: BladeProclamations-v1.0.0
+          name: BladeProclamations-v1.0.1
           path: release/latest.zip
