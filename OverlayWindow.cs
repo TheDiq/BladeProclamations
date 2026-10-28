@@ -38,7 +38,10 @@ public sealed class OverlayWindow : Window
                 ImGuiWindowFlags.NoTitleBar;
 
         if (config.OverlayLocked)
-            Flags |= ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoInputs;
+            Flags |= ImGuiWindowFlags.NoMove |
+                     ImGuiWindowFlags.NoResize |
+                     ImGuiWindowFlags.NoInputs |
+                     ImGuiWindowFlags.NoBackground;
     }
 
     public override void Draw()
@@ -62,10 +65,15 @@ public sealed class OverlayWindow : Window
         var accent = palette.Accent;
         accent.W = alpha;
 
-        draw.AddRectFilled(pos, pos + size, Color(background), 10f);
-        draw.AddRectFilled(pos + new Vector2(7, 7), pos + size - new Vector2(7, 7), Color(inner), 8f);
-        draw.AddRect(pos, pos + size, Color(border), 10f, ImDrawFlags.None, 2.2f);
-        draw.AddRect(pos + new Vector2(7, 7), pos + size - new Vector2(7, 7), Color(accent), 8f, ImDrawFlags.None, 1f);
+        // The frame is only a positioning aid. Once locked, the proclamation floats
+        // directly over the game with no panel or text box behind it.
+        if (!config.OverlayLocked)
+        {
+            draw.AddRectFilled(pos, pos + size, Color(background), 10f);
+            draw.AddRectFilled(pos + new Vector2(7, 7), pos + size - new Vector2(7, 7), Color(inner), 8f);
+            draw.AddRect(pos, pos + size, Color(border), 10f, ImDrawFlags.None, 2.2f);
+            draw.AddRect(pos + new Vector2(7, 7), pos + size - new Vector2(7, 7), Color(accent), 8f, ImDrawFlags.None, 1f);
+        }
 
         var middleY = pos.Y + size.Y / 2f;
         var streakProgress = EaseOutCubic(Math.Clamp(elapsed / 0.32f, 0f, 1f));
@@ -93,8 +101,11 @@ public sealed class OverlayWindow : Window
                 Color(trail), 2.2f - i * 0.45f);
         }
 
-        draw.AddCircleFilled(new Vector2(pos.X + 86, middleY), 3.5f, Color(border));
-        draw.AddCircleFilled(new Vector2(pos.X + size.X - 86, middleY), 3.5f, Color(border));
+        if (!config.OverlayLocked)
+        {
+            draw.AddCircleFilled(new Vector2(pos.X + 86, middleY), 3.5f, Color(border));
+            draw.AddCircleFilled(new Vector2(pos.X + size.X - 86, middleY), 3.5f, Color(border));
+        }
 
         ImGui.SetWindowFontScale(config.OverlayScale);
         ImGui.SetCursorPosY(19);
@@ -143,6 +154,14 @@ public sealed class OverlayWindow : Window
         color.W *= alpha;
         var width = ImGui.CalcTextSize(text).X;
         ImGui.SetCursorPosX(Math.Max(-width, (ImGui.GetWindowSize().X - width) / 2f + horizontalOffset));
+
+        // A soft shadow keeps the free-floating lettering readable over bright fights
+        // without bringing the opaque panel back.
+        var shadowPosition = ImGui.GetCursorScreenPos() + new Vector2(2.5f, 2.5f);
+        ImGui.GetWindowDrawList().AddText(
+            shadowPosition,
+            Color(new Vector4(0.01f, 0.005f, 0.015f, 0.82f * alpha)),
+            text);
         ImGui.TextColored(color, text);
     }
 
