@@ -1,0 +1,18 @@
+[
+  {
+    "Author": "TheDiq",
+    "Name": "Blade Proclamations",
+    "Punchline": "Elegant, catastrophically edgy verses for confirmed Samurai actions.",
+    "Description": "Preserves normal Samurai hotbar actions and transformations. Confirmed major actions produce a private Echo-channel verse and a movable, animated title-card overlay with configurable quotes and themes.",
+    "InternalName": "BladeProclamations",
+    "AssemblyVersion": "1.0.0.0",
+    "TestingAssemblyVersion": "1.0.0.0",
+    "ApplicableVersion": "any",
+    "DalamudApiLevel": 15,
+    "DownloadLinkInstall": "https://github.com/TheDiq/BladeProclamations/releases/download/v1.0.0/latest.zip",
+    "DownloadLinkUpdate": "https://github.com/TheDiq/BladeProclamations/releases/download/v1.0.0/latest.zip",
+    "DownloadLinkTesting": "https://github.com/TheDiq/BladeProclamations/releases/download/v1.0.0/latest.zip",
+    "RepoUrl": "https://github.com/TheDiq/BladeProclamations",
+    "Tags": ["samurai", "roleplay", "overlay"]
+  }
+]
