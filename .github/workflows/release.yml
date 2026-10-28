@@ -1,0 +1,60 @@
+name: Build and publish Dalamud plugin
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore BladeProclamations.csproj
+
+      - name: Build release
+        run: dotnet build BladeProclamations.csproj -c Release --no-restore
+
+      - name: Locate Dalamud package
+        id: package
+        shell: pwsh
+        run: |
+          $package = Get-ChildItem -Path . -Recurse -Filter latest.zip | Select-Object -First 1
+          if (-not $package) {
+            throw "Dalamud.NET.Sdk did not produce latest.zip"
+          }
+          New-Item -ItemType Directory -Force -Path release | Out-Null
+          Copy-Item $package.FullName release/latest.zip -Force
+          "path=release/latest.zip" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Replace v1.0.0 release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete v1.0.0 --yes --cleanup-tag 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "No previous v1.0.0 release exists."
+          }
+          gh release create v1.0.0 release/latest.zip `
+            --title "Blade Proclamations v1.0.0" `
+            --notes "Initial API 15 release: private Echo verses, movable animated overlay, editable action quotes, and three visual themes." `
+            --latest
+
+      - name: Upload diagnostic artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BladeProclamations-v1.0.0
+          path: release/latest.zip
