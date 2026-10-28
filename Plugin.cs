@@ -21,7 +21,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
 
     private readonly IDalamudPluginInterface pluginInterface;
     private readonly ICommandManager commandManager;
-    private readonly IClientState clientState;
+    private readonly IObjectTable objectTable;
     private readonly IChatGui chatGui;
     private readonly IFramework framework;
     private readonly IPluginLog log;
@@ -37,7 +37,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
     public Plugin(
         IDalamudPluginInterface pluginInterface,
         ICommandManager commandManager,
-        IClientState clientState,
+        IObjectTable objectTable,
         IChatGui chatGui,
         IFramework framework,
         IGameInteropProvider interopProvider,
@@ -45,7 +45,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
     {
         this.pluginInterface = pluginInterface;
         this.commandManager = commandManager;
-        this.clientState = clientState;
+        this.objectTable = objectTable;
         this.chatGui = chatGui;
         this.framework = framework;
         this.log = log;
@@ -138,7 +138,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
             if (!config.Enabled || !config.Quotes.TryGetValue(actionId, out var quote) || !quote.Enabled)
                 continue;
 
-            if (config.OnlyWhileSamurai && clientState.LocalPlayer?.ClassJob.RowId != SamuraiClassJobId)
+            if (config.OnlyWhileSamurai && objectTable.LocalPlayer?.ClassJob.RowId != SamuraiClassJobId)
                 continue;
 
             Present(quote);
@@ -191,7 +191,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
 
         try
         {
-            if (actionId == 0 || clientState.LocalPlayer?.EntityId != casterEntityId)
+            if (actionId == 0 || objectTable.LocalPlayer?.EntityId != casterEntityId)
                 return;
 
             if (!config.Quotes.ContainsKey(actionId))
