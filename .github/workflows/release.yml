@@ -21,6 +21,16 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      - name: Download Dalamud API 15 development assemblies
+        shell: pwsh
+        run: |
+          $destination = Join-Path $env:RUNNER_TEMP "dalamud-dev"
+          $archive = Join-Path $env:RUNNER_TEMP "dalamud-latest.zip"
+          Invoke-WebRequest "https://goatcorp.github.io/dalamud-distrib/latest.zip" -OutFile $archive
+          Expand-Archive -Path $archive -DestinationPath $destination -Force
+          "DALAMUD_HOME=$destination" | Out-File -FilePath $env:GITHUB_ENV -Append
+          Write-Host "Dalamud development assemblies extracted to $destination"
+
       - name: Restore dependencies
         run: dotnet restore BladeProclamations.csproj
 
